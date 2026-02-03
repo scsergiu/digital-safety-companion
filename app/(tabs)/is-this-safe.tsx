@@ -3,14 +3,17 @@ import { StyleSheet, TextInput, Pressable, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { assessSafety } from '@/src/features/safety-check';
+import type { SafetyResult } from '@/src/features/safety-check';
 
 export default function IsThisSafeScreen() {
   const [question, setQuestion] = useState('');
+  const [result, setResult] = useState<SafetyResult | null>(null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   const handleCheck = () => {
-    // Placeholder - no action yet
+    setResult(assessSafety(question));
   };
 
   return (
@@ -20,7 +23,7 @@ export default function IsThisSafeScreen() {
       </ThemedText>
 
       <ThemedText style={styles.description}>
-        Describe something you're unsure about.
+        {`Describe something you're unsure about.`}
       </ThemedText>
 
       {/* Card section containing input and button */}
@@ -30,7 +33,8 @@ export default function IsThisSafeScreen() {
           {
             backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7',
           },
-        ]}>
+        ]}
+      >
         <TextInput
           style={[
             styles.input,
@@ -49,19 +53,40 @@ export default function IsThisSafeScreen() {
         />
 
         <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={handleCheck}>
+          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+          onPress={handleCheck}
+        >
           <ThemedText style={styles.buttonText}>Check</ThemedText>
         </Pressable>
       </View>
 
-      {/* Placeholder guidance */}
-      <ThemedText style={styles.guidanceText}>
-        This will provide calm guidance in a future version.
-      </ThemedText>
+      {result !== null ? (
+        <View
+          style={[
+            styles.card,
+            styles.resultCard,
+            { backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7' },
+          ]}
+        >
+          <ThemedText type="subtitle" style={styles.resultLevel}>
+            {result.level.charAt(0).toUpperCase() + result.level.slice(1)}
+          </ThemedText>
+          {result.reasons.map((r, i) => (
+            <ThemedText key={i} style={styles.resultReason}>
+              {r}
+            </ThemedText>
+          ))}
+          {result.nextSteps.map((s, i) => (
+            <ThemedText key={i} style={styles.resultStep}>
+              {i + 1}. {s}
+            </ThemedText>
+          ))}
+        </View>
+      ) : (
+        <ThemedText style={styles.guidanceText}>
+          This will provide calm guidance in a future version.
+        </ThemedText>
+      )}
     </ThemedView>
   );
 }
@@ -106,6 +131,21 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 17,
     fontWeight: '600',
+  },
+  resultCard: {
+    marginTop: 0,
+  },
+  resultLevel: {
+    marginBottom: 8,
+  },
+  resultReason: {
+    marginBottom: 8,
+    lineHeight: 22,
+  },
+  resultStep: {
+    marginBottom: 4,
+    lineHeight: 22,
+    opacity: 0.9,
   },
   guidanceText: {
     fontSize: 15,

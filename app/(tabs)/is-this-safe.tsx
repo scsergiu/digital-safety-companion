@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, Pressable, View } from 'react-native';
+import {
+  StyleSheet,
+  TextInput,
+  Pressable,
+  View,
+  Keyboard,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -13,80 +21,92 @@ export default function IsThisSafeScreen() {
   const isDark = colorScheme === 'dark';
 
   const handleCheck = () => {
+    Keyboard.dismiss();
     setResult(assessSafety(question));
   };
 
   return (
     <ThemedView style={styles.screen}>
-      <ThemedText type="title" style={styles.title}>
-        Is this safe?
-      </ThemedText>
-
-      <ThemedText style={styles.description}>
-        {`Describe something you're unsure about.`}
-      </ThemedText>
-
-      {/* Card section containing input and button */}
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7',
-          },
-        ]}
-      >
-        <TextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: isDark ? '#2c2c2e' : '#ffffff',
-              color: isDark ? '#fff' : '#000',
-            },
-          ]}
-          placeholder="Describe the situation or question"
-          placeholderTextColor={isDark ? '#8e8e93' : '#8e8e93'}
-          value={question}
-          onChangeText={setQuestion}
-          multiline
-          numberOfLines={4}
-          textAlignVertical="top"
-        />
-
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-          onPress={handleCheck}
-        >
-          <ThemedText style={styles.buttonText}>Check</ThemedText>
-        </Pressable>
-      </View>
-
-      {result !== null ? (
-        <View
-          style={[
-            styles.card,
-            styles.resultCard,
-            { backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7' },
-          ]}
-        >
-          <ThemedText type="subtitle" style={styles.resultLevel}>
-            {result.level.charAt(0).toUpperCase() + result.level.slice(1)}
-          </ThemedText>
-          {result.reasons.map((r, i) => (
-            <ThemedText key={i} style={styles.resultReason}>
-              {r}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.wrapper}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <ThemedText type="title" style={styles.title}>
+              Is this safe?
             </ThemedText>
-          ))}
-          {result.nextSteps.map((s, i) => (
-            <ThemedText key={i} style={styles.resultStep}>
-              {i + 1}. {s}
+
+            <ThemedText style={styles.description}>
+              {`Describe something you're unsure about.`}
             </ThemedText>
-          ))}
+
+            {/* Card section containing input and button */}
+            <View
+              style={[
+                styles.card,
+                {
+                  backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7',
+                },
+              ]}
+            >
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: isDark ? '#2c2c2e' : '#ffffff',
+                    color: isDark ? '#fff' : '#000',
+                  },
+                ]}
+                placeholder="Describe the situation or question"
+                placeholderTextColor={isDark ? '#8e8e93' : '#8e8e93'}
+                value={question}
+                onChangeText={setQuestion}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+
+              <Pressable
+                style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+                onPress={handleCheck}
+              >
+                <ThemedText style={styles.buttonText}>Check</ThemedText>
+              </Pressable>
+            </View>
+
+            {result !== null ? (
+              <View
+                style={[
+                  styles.card,
+                  styles.resultCard,
+                  { backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7' },
+                ]}
+              >
+                <ThemedText type="subtitle" style={styles.resultLevel}>
+                  {result.level.charAt(0).toUpperCase() + result.level.slice(1)}
+                </ThemedText>
+                {result.reasons.map((r, i) => (
+                  <ThemedText key={i} style={styles.resultReason}>
+                    {r}
+                  </ThemedText>
+                ))}
+                {result.nextSteps.map((s, i) => (
+                  <ThemedText key={i} style={styles.resultStep}>
+                    {i + 1}. {s}
+                  </ThemedText>
+                ))}
+              </View>
+            ) : (
+              <ThemedText style={styles.guidanceText}>
+                This will provide calm guidance in a future version.
+              </ThemedText>
+            )}
+          </ScrollView>
         </View>
-      ) : (
-        <ThemedText style={styles.guidanceText}>
-          This will provide calm guidance in a future version.
-        </ThemedText>
-      )}
+      </TouchableWithoutFeedback>
     </ThemedView>
   );
 }
@@ -96,6 +116,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     gap: 16,
+  },
+  wrapper: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
   },
   title: {
     marginTop: 12,

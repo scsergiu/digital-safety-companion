@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, Pressable } from 'react-native';
+import { StyleSheet, TextInput, Pressable, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -20,41 +20,48 @@ export default function IsThisSafeScreen() {
       </ThemedText>
 
       <ThemedText style={styles.description}>
-        Type your question below and we'll help you understand if something is safe.
+        Describe something you're unsure about.
       </ThemedText>
 
-      <TextInput
+      {/* Card section containing input and button */}
+      <View
         style={[
-          styles.input,
+          styles.card,
           {
-            backgroundColor: isDark ? '#2a2a2a' : '#f5f5f5',
-            color: isDark ? '#fff' : '#000',
-            borderColor: isDark ? '#444' : '#ddd',
+            backgroundColor: isDark ? '#1c1c1e' : '#f2f2f7',
           },
-        ]}
-        placeholder="e.g., Is this email from my bank real?"
-        placeholderTextColor={isDark ? '#888' : '#999'}
-        value={question}
-        onChangeText={setQuestion}
-        multiline
-        numberOfLines={3}
-        textAlignVertical="top"
-      />
+        ]}>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: isDark ? '#2c2c2e' : '#ffffff',
+              color: isDark ? '#fff' : '#000',
+            },
+          ]}
+          placeholder="Describe the situation or question"
+          placeholderTextColor={isDark ? '#8e8e93' : '#8e8e93'}
+          value={question}
+          onChangeText={setQuestion}
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          pressed && styles.buttonPressed,
-        ]}
-        onPress={handleCheck}>
-        <ThemedText style={styles.buttonText}>Check</ThemedText>
-      </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={handleCheck}>
+          <ThemedText style={styles.buttonText}>Check</ThemedText>
+        </Pressable>
+      </View>
 
-      <ThemedView style={styles.placeholder}>
-        <ThemedText style={styles.placeholderText}>
-          This will provide guidance in a future version
-        </ThemedText>
-      </ThemedView>
+      {/* Placeholder guidance */}
+      <ThemedText style={styles.guidanceText}>
+        This will provide calm guidance in a future version.
+      </ThemedText>
     </ThemedView>
   );
 }
@@ -62,22 +69,29 @@ export default function IsThisSafeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 20,
+    padding: 24,
     gap: 16,
   },
   title: {
-    marginTop: 6,
+    marginTop: 12,
   },
   description: {
-    opacity: 0.8,
-    lineHeight: 22,
+    fontSize: 17,
+    opacity: 0.7,
+    lineHeight: 24,
+  },
+  card: {
+    borderRadius: 16,
+    padding: 16,
+    gap: 16,
+    marginTop: 8,
   },
   input: {
-    borderWidth: 1,
     borderRadius: 12,
-    padding: 14,
-    fontSize: 16,
-    minHeight: 100,
+    padding: 16,
+    fontSize: 17,
+    minHeight: 120,
+    lineHeight: 24,
   },
   button: {
     backgroundColor: '#007AFF',
@@ -86,21 +100,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonPressed: {
-    opacity: 0.8,
+    opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 17,
     fontWeight: '600',
   },
-  placeholder: {
-    marginTop: 8,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  placeholderText: {
-    opacity: 0.6,
+  guidanceText: {
+    fontSize: 15,
+    opacity: 0.5,
     fontStyle: 'italic',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });

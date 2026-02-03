@@ -13,6 +13,7 @@ import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { assessSafety } from '@/src/features/safety-check';
 import type { SafetyResult } from '@/src/features/safety-check';
+import { historyService } from '@/src/features/history';
 
 export default function IsThisSafeScreen() {
   const [question, setQuestion] = useState('');
@@ -22,7 +23,9 @@ export default function IsThisSafeScreen() {
 
   const handleCheck = () => {
     Keyboard.dismiss();
-    setResult(assessSafety(question));
+    const safetyResult = assessSafety(question);
+    setResult(safetyResult);
+    historyService.addEntry(question, safetyResult);
   };
 
   return (

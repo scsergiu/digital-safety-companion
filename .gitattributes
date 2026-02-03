@@ -1,0 +1,12 @@
+# Enforce consistent line endings and treat text files as text
+* text=auto eol=lf
+
+# Binary files (no line-ending conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

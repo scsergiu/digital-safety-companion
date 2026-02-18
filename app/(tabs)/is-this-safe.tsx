@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -15,11 +15,30 @@ import { assessSafety } from '@/src/features/safety-check';
 import type { SafetyResult } from '@/src/features/safety-check';
 import { historyService } from '@/src/features/history';
 
+const PRESETS: { label: string; prefill: string }[] = [
+  { label: 'Suspicious message', prefill: 'I received a message that feels suspicious. It says: ' },
+  {
+    label: 'Login or password issue',
+    prefill: "I'm being asked to log in or enter a password on this site/app: ",
+  },
+  { label: 'App permission question', prefill: 'An app is asking for this permission: ' },
+  {
+    label: 'Unknown Wi-Fi or device',
+    prefill: "I connected to this Wi-Fi or device and I'm unsure if it's safe: ",
+  },
+];
+
 export default function IsThisSafeScreen() {
   const [question, setQuestion] = useState('');
   const [result, setResult] = useState<SafetyResult | null>(null);
+  const inputRef = useRef<TextInput>(null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  const handlePreset = (prefill: string) => {
+    setQuestion(prefill);
+    inputRef.current?.focus();
+  };
 
   const handleCheck = () => {
     Keyboard.dismiss();
@@ -39,12 +58,29 @@ export default function IsThisSafeScreen() {
             showsVerticalScrollIndicator={false}
           >
             <ThemedText type="title" style={styles.title}>
-              Is this safe?
+              Check Something That Feels Off
             </ThemedText>
 
             <ThemedText style={styles.description}>
-              {`Describe something you're unsure about.`}
+              Ask about a message, app permission, login issue, or device. Get calm, practical
+              guidance — no jargon.
             </ThemedText>
+
+            <ThemedText style={styles.presetsLabel}>Common situations</ThemedText>
+            {PRESETS.map(({ label, prefill }) => (
+              <Pressable
+                key={label}
+                style={[
+                  styles.presetButton,
+                  {
+                    borderColor: isDark ? '#444' : '#ddd',
+                  },
+                ]}
+                onPress={() => handlePreset(prefill)}
+              >
+                <ThemedText style={styles.presetButtonText}>{label}</ThemedText>
+              </Pressable>
+            ))}
 
             {/* Card section containing input and button */}
             <View
@@ -56,6 +92,7 @@ export default function IsThisSafeScreen() {
               ]}
             >
               <TextInput
+                ref={inputRef}
                 style={[
                   styles.input,
                   {
@@ -135,11 +172,26 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     lineHeight: 24,
   },
+  presetsLabel: {
+    fontSize: 15,
+    opacity: 0.8,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  presetButton: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+  },
+  presetButtonText: {
+    fontSize: 16,
+  },
   card: {
     borderRadius: 16,
     padding: 16,
     gap: 16,
-    marginTop: 8,
+    marginTop: 16,
   },
   input: {
     borderRadius: 12,

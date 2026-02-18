@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Pressable, View, FlatList } from 'react-native';
+import { StyleSheet, Pressable, View, FlatList, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -47,6 +47,18 @@ export default function HistoryScreen() {
     load();
   }, []);
 
+  const handleClear = async () => {
+    await historyService.clear();
+    setEntries([]);
+  };
+
+  const onClearPress = () => {
+    Alert.alert('Clear history?', 'This will permanently remove all saved checks on this device.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Clear', style: 'destructive', onPress: handleClear },
+    ]);
+  };
+
   const onEntryPress = (id: string) => {
     router.push({
       pathname: '/history-detail',
@@ -77,6 +89,11 @@ export default function HistoryScreen() {
         History
       </ThemedText>
       <ThemedText style={styles.description}>Past safety checks (newest first).</ThemedText>
+      <Pressable style={styles.clearButton} onPress={onClearPress}>
+        <ThemedText type="link" style={styles.clearButtonText}>
+          Clear history
+        </ThemedText>
+      </Pressable>
       {entries.length === 0 ? (
         <ThemedText style={styles.empty}>No checks yet.</ThemedText>
       ) : (
@@ -104,7 +121,16 @@ const styles = StyleSheet.create({
     fontSize: 17,
     opacity: 0.7,
     lineHeight: 24,
+    marginBottom: 8,
+  },
+  clearButton: {
+    alignSelf: 'flex-start',
     marginBottom: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 0,
+  },
+  clearButtonText: {
+    fontSize: 16,
   },
   empty: {
     opacity: 0.6,

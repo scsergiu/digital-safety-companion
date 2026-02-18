@@ -56,6 +56,10 @@ export function createHistoryService(storage: StorageAdapter) {
       const entries = await this.getEntries();
       return entries.find((e) => e.id === id) ?? null;
     },
+
+    async clear(): Promise<void> {
+      await storage.removeItem(HISTORY_KEY);
+    },
   };
 }
 

@@ -112,4 +112,22 @@ describe('historyService', () => {
     expect(byQuestion.A?.level).toBe('low');
     expect(byQuestion.B?.level).toBe('medium');
   });
+
+  it('after clear(), getEntries() returns empty array', async () => {
+    const storage = inMemoryStorage();
+    const service = createHistoryService(storage);
+    await service.addEntry('One', sampleResult);
+    await service.addEntry('Two', sampleResult);
+    await service.clear();
+    const entries = await service.getEntries();
+    expect(entries).toEqual([]);
+  });
+
+  it('clear() is safe when storage is already empty', async () => {
+    const storage = inMemoryStorage();
+    const service = createHistoryService(storage);
+    await service.clear();
+    const entries = await service.getEntries();
+    expect(entries).toEqual([]);
+  });
 });

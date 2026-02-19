@@ -1,8 +1,11 @@
-import { StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { StyleSheet, Pressable } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <ThemedView style={styles.screen}>
       <ThemedText type="title" style={styles.title}>
@@ -18,10 +21,22 @@ export default function HomeScreen() {
           Areas
         </ThemedText>
 
-        <ThemedText style={styles.bullet}>• Is this safe?</ThemedText>
-        <ThemedText style={styles.bullet}>• Home setup</ThemedText>
-        <ThemedText style={styles.bullet}>• Kids &amp; family</ThemedText>
-        <ThemedText style={styles.bullet}>• Something feels off</ThemedText>
+        <Pressable
+          onPress={() => router.push('/(tabs)/is-this-safe' as import('expo-router').Href)}
+        >
+          <ThemedText style={styles.bullet}>• Is this safe?</ThemedText>
+        </Pressable>
+        <Pressable onPress={() => router.push('/home-setup' as import('expo-router').Href)}>
+          <ThemedText style={styles.bullet}>• Home setup</ThemedText>
+        </Pressable>
+        <Pressable onPress={() => router.push('/kids-family' as import('expo-router').Href)}>
+          <ThemedText style={styles.bullet}>• Kids &amp; family</ThemedText>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push('/something-feels-off' as import('expo-router').Href)}
+        >
+          <ThemedText style={styles.bullet}>• Something feels off</ThemedText>
+        </Pressable>
       </ThemedView>
 
       <ThemedView style={styles.card}>
